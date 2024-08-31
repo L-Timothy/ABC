@@ -143,16 +143,21 @@
 
 <script>
 function checkQuota() {
+    console.log('checkQuota function called'); // 新增日志
     const apiUrl = document.getElementById('api_url').value;
     const apiKey = document.getElementById('api_key').value;
+    console.log('Selected API URL:', apiUrl); // 新增日志
+    console.log('API Key length:', apiKey.length); // 新增日志，不显示完整的 API Key
+
     const resultDiv = document.getElementById('result');
     const loader = document.getElementById('loader');
 
+    console.log('Showing loader'); // 新增日志
     resultDiv.style.display = 'none';
     loader.style.display = 'block';
 
-    // 使用您的 Cloudflare Worker URL
-    fetch('https://morning-field-b02a.2334375990.workers.dev', {
+    console.log('Sending fetch request to Worker'); // 新增日志
+    fetch('https://your-worker.your-subdomain.workers.dev', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -162,12 +167,19 @@ function checkQuota() {
             apiKey: apiKey
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Received response from Worker'); // 新增日志
+        console.log('Response status:', response.status); // 新增日志
+        return response.json();
+    })
     .then(data => {
+        console.log('Parsed response data:', data); // 新增日志
         loader.style.display = 'none';
         if (data.error) {
+            console.error('Error in response:', data.error); // 新增日志
             resultDiv.innerHTML = `<span style="color: #ff3b30;">检查额度失败: ${data.error}</span>`;
         } else {
+            console.log('Displaying balance information'); // 新增日志
             resultDiv.innerHTML = `
                 <strong>可用额度:</strong> $${data.remain}<br>
                 <strong>已用额度:</strong> $${data.used}<br>
@@ -177,6 +189,7 @@ function checkQuota() {
         resultDiv.style.display = 'block';
     })
     .catch(error => {
+        console.error('Fetch error:', error); // 新增日志
         loader.style.display = 'none';
         resultDiv.innerHTML = `<span style="color: #ff3b30;">检查额度失败: ${error.message}</span>`;
         resultDiv.style.display = 'block';
@@ -184,6 +197,7 @@ function checkQuota() {
 }
 
 function clearForm() {
+    console.log('clearForm function called'); // 新增日志
     document.getElementById('api_key').value = '';
     document.getElementById('result').style.display = 'none';
     document.getElementById('loader').style.display = 'none';
